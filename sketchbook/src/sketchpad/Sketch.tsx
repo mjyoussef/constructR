@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef, MouseEvent} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import { beam } from '../utilities/drawer';
 import {Block, copyBlock} from '../types/uiObjects';
 
@@ -44,7 +44,7 @@ function findBlockOnClick(blocks: Array<Block>, point: {x: number, y: number}):
 }
 
 export function Sketch(props: SketchProps) {
-    let keysPressed: {[key:string]: string} = {};
+    let keysPressed: Set<String> = new Set();
     const [cache, setCache] = useState(new Array<Array<Block>>(props.blocks));
     const [mouseDown, setMouseDown] = useState(false);
 
@@ -64,11 +64,6 @@ export function Sketch(props: SketchProps) {
         console.log(mouseDown);
         if (!mouseDown) {
             return;
-        }
-
-        const coords: {x: number, y: number} = {
-            x: 0,
-            y: 0
         }
 
         if (canvasRef.current !== null) {
@@ -105,15 +100,41 @@ export function Sketch(props: SketchProps) {
         }
     }
 
-    useEffect(() => {
-        window.addEventListener("keydown", (e: KeyboardEvent) => {
-            //
-        })
-    }, []);
-
     // clears and displays blocks on sketch canvas at every rerender
     useEffect(() => {
         console.log(cache);
+        function keyDownHandler(e: KeyboardEvent): void {
+            console.log(e.key);
+            keysPressed.add(e.key);
+            console.log(keysPressed);
+            if ((keysPressed.has("Control") || keysPressed.has("Meta")) && keysPressed.has("z")) {
+                let recentState: Array<Block> | null = null;
+                if (cache.length >= 2) {
+                    recentState = cache[cache.length-2];
+                }
+
+                if (recentState !== null) {
+                    props.setBlocks(recentState);
+                }
+
+                setCache(prevCache => {
+                    const newCache: Array<Array<Block>> = new Array(Math.max(0, prevCache.length-1));
+                    for (let i=0; i<prevCache.length-1; i++) {
+                        newCache[i] = prevCache[i];
+                    }
+
+                    return newCache;
+                });
+            }
+        }
+
+        function keyUpHandler(e: KeyboardEvent): void {
+            keysPressed.delete(e.key);
+        }
+
+        window.addEventListener("keydown", keyDownHandler);
+        window.addEventListener("keyup", keyUpHandler);
+
         if (canvasRef.current !== null) {
             const canvas: HTMLCanvasElement = canvasRef.current;
             const context = canvas.getContext('2d');
@@ -126,6 +147,11 @@ export function Sketch(props: SketchProps) {
                     beam(context, props.blocks[i]);
                 }
             }
+        }
+        
+        return () => {
+            window.removeEventListener("keydown", keyDownHandler);
+            window.removeEventListener("keyup", keyUpHandler);
         }
     });
 
