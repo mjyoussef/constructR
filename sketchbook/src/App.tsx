@@ -8,8 +8,6 @@ function App() {
 
   const [blocks, setBlocks] = useState(new Array<Block>());
 
-  console.log(blocks);
-
   return (
     <div className="w-screen h-screen flex flex-row grid grid-cols-5">
       <div className="flex flex-col justify-start h-11/12 col-span-1 border-solid border-2 border-black m-2">
