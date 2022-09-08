@@ -1,6 +1,6 @@
 import React, {useEffect, useRef} from 'react';
 import {Block} from '../types/uiObjects';
-import {draw} from './drawer';
+import {beam} from '../utilities/drawer';
 
 type BeamProps = {
     width: number,
@@ -9,6 +9,7 @@ type BeamProps = {
 }
 
 export function Beam(props: BeamProps) {
+
     const canvasRef = useRef(null);
 
     useEffect(() => {
@@ -16,9 +17,12 @@ export function Beam(props: BeamProps) {
             const canvas : HTMLCanvasElement = canvasRef.current;
             const context = canvas.getContext('2d');
 
+            const x = (canvas.width/2) - (props.width/2);
+            const y = (canvas.height/5) - (props.height/2);
+
             const displayBeam: Block = {
-                x: canvas.width/2,
-                y: 0,
+                x: x,
+                y: y,
                 width: props.width,
                 height: props.height,
                 angle: 0,
@@ -26,7 +30,7 @@ export function Beam(props: BeamProps) {
             }
 
             if (context !== null) {
-                draw(context, displayBeam);
+                beam(context, displayBeam);
             }
         }
     });

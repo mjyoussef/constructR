@@ -1,29 +1,33 @@
-import React, {Dispatch, SetStateAction} from 'react';
+import React, {useState, Dispatch, SetStateAction} from 'react';
 import {Block, copyBlock} from '../types/uiObjects';
 import {Beam} from './Beam';
 
 type LibraryProps = {
-    setBlocks: Dispatch<SetStateAction<Block[]>>;
-    nextX: number,
-    nextY: number
+    setBlocks: Dispatch<SetStateAction<Block[]>>
 }
 
-const defaultWidth = 50;
-const defaultHeight = 600;
+const defaultWidth = 800;
+const defaultHeight = 50;
 const defaultColor = "red";
 
 export function Library(props: LibraryProps) {
 
+    const [nextX, setNextX] = useState(0);
+    const [nextY, setNextY] = useState(0);
+
+
     function addBlockHandler() {
         const newBlock: Block = {
-            x: props.nextX,
-            y: props.nextY,
-            width: defaultWidth,
-            height: defaultHeight,
+            x: nextX,
+            y: nextY,
+            width: defaultWidth/4,
+            height: defaultHeight/4,
             angle: 0,
             color: defaultColor
         }
 
+        setNextX(nextX + 10);
+        setNextY(nextY + 10);
         props.setBlocks(blocks => [...blocks, newBlock]);
     }
 

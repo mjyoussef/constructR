@@ -17,3 +17,8 @@ export function copyBlock(block: Block): Block {
       color: block.color
    }
 }
+
+export type Dimension = {
+   width: number,
+   height: number
+}
