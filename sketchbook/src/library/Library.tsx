@@ -9,8 +9,8 @@ type LibraryProps = {
     libraryAddOns: Array<AddOn>
 }
 
-const defaultWidth = 800;
-const defaultHeight = 50;
+const defaultWidth = 1000;
+const defaultHeight = 80;
 const defaultColor = "red";
 
 export function Library(props: LibraryProps) {
@@ -34,8 +34,8 @@ export function Library(props: LibraryProps) {
     }
 
     return (
-        <div className={"flex flex-col m-2"}>
-            <div className={"flex flex-row-reverse mr-2 mt-2 mb-10"}>
+        <div className={"flex flex-col m-2 items-stretch"}>
+            <div className={"self-end mt-1 mb-16 mx-1"}>
                 <button
                     className={`bg-transparent hover:bg-blue-500 text-blue-700 font-bold
                     hover:text-white w-fit py-2 px-4 border border-blue-500 hover:border-transparent rounded`}
@@ -44,12 +44,14 @@ export function Library(props: LibraryProps) {
                     Add Component
                 </button>
             </div>
-            <button
-                className={"self-center bg-cyan-500 hover:bg-cyan-300 text-white font-bold rounded-full w-fit py-1 px-4"}
-                type="button"
-                onClick={addBlockHandler}>
-                Add beam
-            </button>
+            <div className={"self-center"}>
+                <button
+                    className={"self-center bg-cyan-500 hover:bg-cyan-300 text-white font-bold rounded-full w-fit py-1 px-4"}
+                    type="button"
+                    onClick={addBlockHandler}>
+                    Add beam
+                </button>
+            </div>
             <Beam width={defaultWidth} height={defaultHeight} color={defaultColor}/>
         </div>
     )

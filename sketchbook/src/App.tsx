@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import './App.css';
 import {Block, AddOn} from './types/uiObjects';
 import {Library} from './library/Library';
-import {Sketch} from './sketchpad/Sketch';
+import {Page} from './sketchpad/Page';
 import {Popup} from './library/Popup';
 
 function App() {
@@ -11,7 +11,9 @@ function App() {
   const [blocks, setBlocks] = useState(new Array<Block>());
 
   const [addOns, setAddOns] = useState(new Array<AddOn>());
+
   const [libraryAddOns, setLibraryAddOns] = useState(new Array<AddOn>());
+
   const [popupTrigger, setPopupTrigger] = useState(false);
 
   console.log(libraryAddOns);
@@ -24,7 +26,7 @@ function App() {
         <Library setBlocks={setBlocks} setAddOns={setAddOns} setPopupTrigger={setPopupTrigger} libraryAddOns={libraryAddOns}/>
       </div>
       <div className="h-11/12 col-span-4 border-solid border-2 border-black m-2">
-        <Sketch blocks={blocks} setBlocks={setBlocks}/>
+        <Page blocks={blocks} setBlocks={setBlocks} addOns={addOns} setAddOns={setAddOns}/>
       </div>
     </div>
   );
