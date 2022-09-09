@@ -1,14 +1,35 @@
 import React, { useState, Dispatch, SetStateAction } from 'react';
+import {AddOn} from '../types/uiObjects';
 
 
 type PopupProps = {
     trigger: boolean,
-    setPopupTrigger: Dispatch<SetStateAction<boolean>>
+    setPopupTrigger: Dispatch<SetStateAction<boolean>>,
+    setLibraryAddOns: Dispatch<SetStateAction<AddOn[]>>
 }
 
 export function Popup(props: React.PropsWithChildren<PopupProps>) {
 
     const [componentName, setComponentName] = useState("");
+
+    function updateAddOnsHandler(event: React.ChangeEvent<HTMLInputElement>) {
+        if (event.target.files !== null) {
+            const file: File = event.target.files[0];
+            const fileReader: FileReader = new FileReader();
+
+            fileReader.onload = () => {
+                const image: HTMLImageElement = new Image();
+                image.src = fileReader.result as string;
+
+                const newAddOn: AddOn = {
+                    label: componentName,
+                    image: image
+                }
+                props.setLibraryAddOns(prev => [...prev, newAddOn]);
+            }
+            fileReader.readAsDataURL(file);
+        }
+    }
 
     return (props.trigger) ? ( 
         <div className={"fixed bg-slate-800 bg-opacity-50 w-screen h-screen flex justify-center"}>
@@ -29,11 +50,7 @@ export function Popup(props: React.PropsWithChildren<PopupProps>) {
                                 onChange={(event) => setComponentName(event.target.value)}/>
                         </label>
                     </form>
-                    <input type="file" onChange={(event) => {
-                        if (event.target.files !== null) {
-                            console.log(event.target.files[0]);
-                        }
-                    }}/>
+                    <input type="file" onChange={updateAddOnsHandler}/>
                 </div>
             </div>
         </div>

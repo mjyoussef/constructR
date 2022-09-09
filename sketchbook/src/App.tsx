@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react';
+import React, {useState} from 'react';
 import './App.css';
 import {Block, AddOn} from './types/uiObjects';
 import {Library} from './library/Library';
@@ -14,9 +14,11 @@ function App() {
   const [libraryAddOns, setLibraryAddOns] = useState(new Array<AddOn>());
   const [popupTrigger, setPopupTrigger] = useState(false);
 
+  console.log(libraryAddOns);
+
   return (
     <div className="w-screen h-screen flex flex-row grid grid-cols-5">
-      <Popup trigger={popupTrigger} setPopupTrigger={setPopupTrigger}>
+      <Popup trigger={popupTrigger} setPopupTrigger={setPopupTrigger} setLibraryAddOns={setLibraryAddOns}>
       </Popup>
       <div className="flex flex-col justify-start h-11/12 col-span-1 border-solid border-2 border-black m-2">
         <Library setBlocks={setBlocks} setAddOns={setAddOns} setPopupTrigger={setPopupTrigger} libraryAddOns={libraryAddOns}/>

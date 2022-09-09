@@ -52,7 +52,6 @@ export function Sketch(props: SketchProps) {
 
     function handleMouseDown(e: React.MouseEvent<HTMLCanvasElement>): void {
         setMouseDown(true);
-        console.log("mouse DOWN");
     }
 
     function handleMouseUp(e: React.MouseEvent<HTMLCanvasElement>): void {
@@ -61,7 +60,6 @@ export function Sketch(props: SketchProps) {
     }
 
     function handleMouseMove(e: React.MouseEvent<HTMLCanvasElement>): void {
-        console.log(mouseDown);
         if (!mouseDown) {
             return;
         }
@@ -102,11 +100,8 @@ export function Sketch(props: SketchProps) {
 
     // clears and displays blocks on sketch canvas at every rerender
     useEffect(() => {
-        console.log(cache);
         function keyDownHandler(e: KeyboardEvent): void {
-            console.log(e.key);
             keysPressed.add(e.key);
-            console.log(keysPressed);
             if ((keysPressed.has("Control") || keysPressed.has("Meta")) && keysPressed.has("z")) {
                 let recentState: Array<Block> | null = null;
                 if (cache.length >= 2) {

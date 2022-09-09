@@ -25,5 +25,5 @@ export type Dimension = {
 
 export type AddOn = {
    label: string,
-   filePath: string
+   image: HTMLImageElement
 }
