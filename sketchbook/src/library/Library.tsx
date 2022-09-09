@@ -1,9 +1,12 @@
 import React, {useState, Dispatch, SetStateAction} from 'react';
-import {Block, copyBlock} from '../types/uiObjects';
+import {Block, AddOn} from '../types/uiObjects';
 import {Beam} from './Beam';
 
 type LibraryProps = {
-    setBlocks: Dispatch<SetStateAction<Block[]>>
+    setBlocks: Dispatch<SetStateAction<Block[]>>,
+    setAddOns: Dispatch<SetStateAction<AddOn[]>>,
+    setPopupTrigger: Dispatch<SetStateAction<boolean>>,
+    libraryAddOns: Array<AddOn>
 }
 
 const defaultWidth = 800;
@@ -14,7 +17,6 @@ export function Library(props: LibraryProps) {
 
     const [nextX, setNextX] = useState(0);
     const [nextY, setNextY] = useState(0);
-
 
     function addBlockHandler() {
         const newBlock: Block = {
@@ -33,6 +35,15 @@ export function Library(props: LibraryProps) {
 
     return (
         <div className={"flex flex-col m-2"}>
+            <div className={"flex flex-row-reverse mr-2 mt-2 mb-10"}>
+                <button
+                    className={`bg-transparent hover:bg-blue-500 text-blue-700 font-bold
+                    hover:text-white w-fit py-2 px-4 border border-blue-500 hover:border-transparent rounded`}
+                    type="button"
+                    onClick={() => props.setPopupTrigger(true)}>
+                    Add Component
+                </button>
+            </div>
             <button
                 className={"self-center bg-cyan-500 hover:bg-cyan-300 text-white font-bold rounded-full w-fit py-1 px-4"}
                 type="button"

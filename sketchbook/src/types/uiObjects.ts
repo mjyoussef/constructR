@@ -22,3 +22,8 @@ export type Dimension = {
    width: number,
    height: number
 }
+
+export type AddOn = {
+   label: string,
+   filePath: string
+}

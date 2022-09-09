@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useRef} from 'react';
-import { beam } from '../utilities/drawer';
+import { beam } from '../canvasUtilities/drawer';
 import {Block, copyBlock} from '../types/uiObjects';
 
 type SketchProps = {
