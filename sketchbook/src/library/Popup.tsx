@@ -1,14 +1,13 @@
 import React, { useState, Dispatch, SetStateAction } from 'react';
 import {AddOn} from '../types/uiObjects';
 
-
 type PopupProps = {
     trigger: boolean,
     setPopupTrigger: Dispatch<SetStateAction<boolean>>,
     setLibraryAddOns: Dispatch<SetStateAction<AddOn[]>>
 }
 
-export function Popup(props: React.PropsWithChildren<PopupProps>) {
+export function Popup(props: PopupProps) {
 
     const [componentName, setComponentName] = useState("");
 

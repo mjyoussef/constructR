@@ -1,10 +1,10 @@
-import React, {useState, Dispatch, SetStateAction} from 'react';
+import {useState, Dispatch, SetStateAction} from 'react';
 import {Block, AddOn} from '../types/uiObjects';
+import {CacheEntry, SketchCache} from '../types/cache';
 import {Beam} from './Beam';
 
 type LibraryProps = {
-    setBlocks: Dispatch<SetStateAction<Block[]>>,
-    setAddOns: Dispatch<SetStateAction<AddOn[]>>,
+    setCache: Dispatch<SetStateAction<SketchCache>>,
     setPopupTrigger: Dispatch<SetStateAction<boolean>>,
     libraryAddOns: Array<AddOn>
 }
@@ -30,7 +30,8 @@ export function Library(props: LibraryProps) {
 
         setNextX(nextX + 10);
         setNextY(nextY + 10);
-        props.setBlocks(blocks => [...blocks, newBlock]);
+
+        props.setCache(prevCache => prevCache.addBlock(newBlock));
     }
 
     return (
