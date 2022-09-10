@@ -53,8 +53,22 @@ export function Page(props: PageProps) {
     });
 
     return (
-        <div>
-            <SketchCanvas blocks={props.blocks} setBlocks={props.setBlocks} setCache={setCache}/>
+        <div className={"flex flex-col w-full h-full"}>
+            <div className={"flex flex-row-reverse mt-3 mx-8"}>
+                <button
+                    className={`bg-transparent hover:bg-red-500 text-red-500 font-bold
+                        hover:text-white w-fit py-2 px-4 border border-red-500 hover:border-transparent rounded`}
+                    type="button"
+                    onClick={() => {
+                        props.setBlocks(new Array<Block>());
+                        setCache(new Array<Array<Block>>());
+                    }}>
+                    Clear Sketch
+                </button>
+            </div>
+            <div className={""}>
+                <SketchCanvas blocks={props.blocks} setBlocks={props.setBlocks} setCache={setCache}/>
+            </div>
         </div>
     )
 }

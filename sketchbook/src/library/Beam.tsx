@@ -1,6 +1,6 @@
 import React, {useEffect, useRef} from 'react';
 import {Block} from '../types/uiObjects';
-import {beam} from '../canvasUtilities/drawer';
+import {beam} from '../utilities/drawer';
 
 type BeamProps = {
     width: number,
