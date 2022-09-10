@@ -27,15 +27,6 @@ export function Page(props: PageProps) {
                 if (recentState !== null) {
                     props.setBlocks(recentState);
                 }
-
-                setCache(prevCache => {
-                    const newCache: Array<Array<Block>> = new Array(Math.max(0, prevCache.length-1));
-                    for (let i=0; i<prevCache.length-1; i++) {
-                        newCache[i] = prevCache[i];
-                    }
-
-                    return newCache;
-                });
             }
         }
 
@@ -54,7 +45,7 @@ export function Page(props: PageProps) {
 
     return (
         <div className={"flex flex-col w-full h-full"}>
-            <div className={"flex flex-row-reverse mt-3 mx-8"}>
+            <div className={"flex flex-row-reverse mt-3 mx-6"}>
                 <button
                     className={`bg-transparent hover:bg-red-500 text-red-500 font-bold
                         hover:text-white w-fit py-2 px-4 border border-red-500 hover:border-transparent rounded`}
@@ -65,6 +56,12 @@ export function Page(props: PageProps) {
                     }}>
                     Clear Sketch
                 </button>
+                <div className={""}>
+                    <img className={"object-scale-down w-12 mr-16 mt-3 p-2 hover:p-1"} src={require("./images/forward_arrow.png")} alt={"forward arrow"} />
+                </div>
+                <div>
+                    <img className={"object-scale-down w-12 mr-2 mt-3 p-2 hover:p-1"} src={require("./images/backward_arrow.png")} alt={"backward arrow"}/>
+                </div>
             </div>
             <div className={""}>
                 <SketchCanvas blocks={props.blocks} setBlocks={props.setBlocks} setCache={setCache}/>

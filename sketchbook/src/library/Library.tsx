@@ -46,10 +46,10 @@ export function Library(props: LibraryProps) {
             </div>
             <div className={"self-center"}>
                 <button
-                    className={"self-center bg-cyan-500 hover:bg-cyan-300 text-white font-bold rounded-full w-fit py-1 px-4"}
+                    className={"self-center bg-cyan-500 hover:bg-cyan-400 text-white font-bold rounded-full w-fit py-1 px-4"}
                     type="button"
                     onClick={addBlockHandler}>
-                    Add beam
+                    Add Beam
                 </button>
             </div>
             <Beam width={defaultWidth} height={defaultHeight} color={defaultColor}/>
