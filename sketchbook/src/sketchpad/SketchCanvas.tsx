@@ -1,10 +1,11 @@
 import React, {useState, useEffect, useRef} from 'react';
 import { beam } from '../utilities/drawer';
-import {Block, copyBlock} from '../types/uiObjects';
+import {Block, AddOn} from '../types/uiObjects';
+import {CacheEntry, SketchCache} from '../types/cache';
 
 type SketchProps = {
-    blocks: Array<Block>,
-    setBlocks:  React.Dispatch<React.SetStateAction<Block[]>>
+    cache: SketchCache,
+    setCache: React.Dispatch<React.SetStateAction<SketchCache>>
 }
 
 function findBlockOnClick(blocks: Array<Block>, point: {x: number, y: number}):
@@ -16,7 +17,11 @@ function findBlockOnClick(blocks: Array<Block>, point: {x: number, y: number}):
     let minDist: number = Number.MAX_VALUE;
 
     for (let i=0; i<blocks.length; i++) {
-        newBlocks[i] = copyBlock(blocks[i]);
+
+        // shallow copy
+        newBlocks[i] = {
+            ...blocks[i]
+        };
 
         let xDist: number = point.x - newBlocks[i].x;
         let yDist: number = point.y - newBlocks[i].y;
@@ -43,25 +48,47 @@ function findBlockOnClick(blocks: Array<Block>, point: {x: number, y: number}):
     return output;
 }
 
-export function Sketch(props: SketchProps) {
-    let keysPressed: Set<String> = new Set();
-    const [cache, setCache] = useState(new Array<Array<Block>>(props.blocks));
+export function SketchCanvas(props: SketchProps) {
     const [mouseDown, setMouseDown] = useState(false);
+
+    // Use the state of the blocks array and the add-ons array at the specified idx.
+    // Once the user has finished repositioning blocks and/or add-ons (notified by mouse up event),
+    // a new cache entry is added **** at `idx` ****
+
+    function getUpdatedBlocks(): Array<Block> {
+        return props.cache.getBlocks().map(block => {
+            return {...block};
+        });
+    }
+
+    function getUpdatedAddOns(): Array<AddOn> {
+        return props.cache.getAddOns().map(addOn => {
+            return {...addOn};
+        });
+    }
+
+    const [blocks, setBlocks] = useState(getUpdatedBlocks());
+    const [addOns, setAddOns] = useState(getUpdatedAddOns());
 
     const canvasRef: React.MutableRefObject<HTMLCanvasElement | null> = useRef(null);
 
-    function handleMouseDown(e: React.MouseEvent<HTMLCanvasElement>): void {
+    function handleMouseDown(): void {
         setMouseDown(true);
-        console.log("mouse DOWN");
     }
 
-    function handleMouseUp(e: React.MouseEvent<HTMLCanvasElement>): void {
+    function handleMouseUp(): void {
         setMouseDown(false);
-        setCache(prevCache => [...prevCache, props.blocks]);
+        props.setCache(prevCache => {
+            const newEntry : CacheEntry = {
+                blocks: blocks,
+                addOns: addOns
+            }
+
+            return prevCache.addEntry(newEntry);
+        });
     }
 
     function handleMouseMove(e: React.MouseEvent<HTMLCanvasElement>): void {
-        console.log(mouseDown);
         if (!mouseDown) {
             return;
         }
@@ -85,7 +112,7 @@ export function Sketch(props: SketchProps) {
                     y: e.clientY - rec.top
                 }
 
-                props.setBlocks(prev => {
+                setBlocks(prev => {
                     const newBlocksObj = findBlockOnClick(prev, coords);
                     const selectedBlock = newBlocksObj.closestBlock;
 
@@ -100,41 +127,15 @@ export function Sketch(props: SketchProps) {
         }
     }
 
+    useEffect(() => {
+        if (!mouseDown) {
+            setBlocks(getUpdatedBlocks());
+            setAddOns(getUpdatedAddOns());
+        }
+    }, [props.cache]);
+
     // clears and displays blocks on sketch canvas at every rerender
     useEffect(() => {
-        console.log(cache);
-        function keyDownHandler(e: KeyboardEvent): void {
-            console.log(e.key);
-            keysPressed.add(e.key);
-            console.log(keysPressed);
-            if ((keysPressed.has("Control") || keysPressed.has("Meta")) && keysPressed.has("z")) {
-                let recentState: Array<Block> | null = null;
-                if (cache.length >= 2) {
-                    recentState = cache[cache.length-2];
-                }
-
-                if (recentState !== null) {
-                    props.setBlocks(recentState);
-                }
-
-                setCache(prevCache => {
-                    const newCache: Array<Array<Block>> = new Array(Math.max(0, prevCache.length-1));
-                    for (let i=0; i<prevCache.length-1; i++) {
-                        newCache[i] = prevCache[i];
-                    }
-
-                    return newCache;
-                });
-            }
-        }
-
-        function keyUpHandler(e: KeyboardEvent): void {
-            keysPressed.delete(e.key);
-        }
-
-        window.addEventListener("keydown", keyDownHandler);
-        window.addEventListener("keyup", keyUpHandler);
-
         if (canvasRef.current !== null) {
             const canvas: HTMLCanvasElement = canvasRef.current;
             const context = canvas.getContext('2d');
@@ -143,15 +144,10 @@ export function Sketch(props: SketchProps) {
                 //clear the canvas before displaying components
                 context.clearRect(0, 0, canvas.width, canvas.height);
 
-                for (let i=0; i<props.blocks.length; i++) {
-                    beam(context, props.blocks[i]);
+                for (let i=0; i<blocks.length; i++) {
+                    beam(context, blocks[i]);
                 }
             }
-        }
-        
-        return () => {
-            window.removeEventListener("keydown", keyDownHandler);
-            window.removeEventListener("keyup", keyUpHandler);
         }
     });
 
