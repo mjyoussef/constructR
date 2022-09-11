@@ -13,10 +13,12 @@ const defaultWidth = 1000;
 const defaultHeight = 80;
 const defaultColor = "red";
 
+const rescalingFactor = 4;
+
 export function Library(props: LibraryProps) {
 
-    const [nextX, setNextX] = useState(0);
-    const [nextY, setNextY] = useState(0);
+    const [nextX, setNextX] = useState((defaultWidth/2)/rescalingFactor);
+    const [nextY, setNextY] = useState((defaultHeight/2)/rescalingFactor);
 
     function addBlockHandler() {
         const newBlock: Block = {
