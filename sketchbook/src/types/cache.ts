@@ -19,7 +19,7 @@ export class SketchCache {
      * @returns the original array of blocks
      */
     getBlocks(): Array<Block> {
-      if (this.cache.length === 0) {
+      if (this.idx < 0) {
          return new Array();
       }
 
@@ -31,7 +31,7 @@ export class SketchCache {
      * @returns the original array of addOns
      */
     getAddOns(): Array<AddOn> {
-      if (this.cache.length === 0) {
+      if (this.idx < 0) {
          return new Array();
       }
       
@@ -70,7 +70,7 @@ export class SketchCache {
          addOns: new Array()
       }
 
-      if (this.cache.length > 0) {
+      if (this.idx > -1) {
          const currentEntry: CacheEntry = this.cache[this.idx];
          newEntry = {
             blocks: [...currentEntry.blocks, block],
@@ -94,7 +94,7 @@ export class SketchCache {
          addOns: new Array(addOn)
       }
 
-      if (this.cache.length > 0) {
+      if (this.idx > -1) {
          const currentEntry: CacheEntry = this.cache[this.idx];
          newEntry = {
             blocks: currentEntry.blocks,

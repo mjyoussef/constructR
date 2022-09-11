@@ -1,5 +1,5 @@
 import {Dispatch, SetStateAction} from 'react';
-import {SketchCache} from '../types/cache';
+import {CacheEntry, SketchCache} from '../types/cache';
 import {SketchCanvas} from './SketchCanvas';
 
 
@@ -13,8 +13,9 @@ export function Page(props: PageProps) {
     function updateFromCache(steps: number): void {
         let newIdx: number = props.cache.idx + steps;
         if (newIdx < 0) {
-            newIdx = 0;
+            newIdx = -1;
         }
+
         if (newIdx >= props.cache.cache.length) {
             newIdx = props.cache.cache.length-1;
         }
@@ -32,7 +33,7 @@ export function Page(props: PageProps) {
                         hover:text-white w-fit py-2 px-4 border border-red-500 hover:border-transparent rounded`}
                     type="button"
                     onClick={() => {
-                        console.log("Sketch has been cleared!");
+                        props.setCache(new SketchCache(new Array<CacheEntry>(), -1));
                     }}>
                     Clear Sketch
                 </button>

@@ -31,7 +31,10 @@ export function Library(props: LibraryProps) {
         setNextX(nextX + 10);
         setNextY(nextY + 10);
 
-        props.setCache(prevCache => prevCache.addBlock(newBlock));
+        props.setCache(prevCache => {
+            console.log(prevCache);
+            return prevCache.addBlock(newBlock);
+        });
     }
 
     return (
