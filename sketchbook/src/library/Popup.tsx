@@ -22,7 +22,12 @@ export function Popup(props: PopupProps) {
 
                 const newAddOn: AddOn = {
                     label: componentName,
-                    image: image
+                    image: image,
+                    x: 0,
+                    y: 0,
+                    width: image.width,
+                    height: image.height,
+                    angle: 0
                 }
                 props.setLibraryAddOns(prev => [...prev, newAddOn]);
             }

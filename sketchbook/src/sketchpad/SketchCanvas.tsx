@@ -8,26 +8,31 @@ type SketchProps = {
     setCache: React.Dispatch<React.SetStateAction<SketchCache>>
 }
 
-function findClosestBlock(blocks: Array<Block>, point: {x: number, y: number}): number {
-    if (blocks.length === 0) {
+function distance(p1: {x: number, y: number}, p2: {x: number, y: number}) {
+    const xDist: number = p1.x - p2.x;
+    const yDist: number = p1.y - p2.y;
+
+    return Math.sqrt(Math.pow(xDist, 2) + Math.pow(yDist, 2));
+}
+
+function findClosestItem(items: Array<Block | AddOn>, point: {x: number, y: number}): number {
+    if (items.length === 0) {
         return -1;
     }
 
     let closest: number = 0;
     let minDist: number = Number.MAX_VALUE;
 
-    for (let i=0; i<blocks.length; i++) {
-        let xDist: number = point.x - blocks[i].x;
-        let yDist: number = point.y - blocks[i].y;
+    for (let i=0; i<items.length; i++) {
 
-        let dist: number = Math.sqrt(Math.pow(xDist, 2) + Math.pow(yDist, 2));
+        let dist: number = distance(point, {x: items[i].x, y: items[i].y});
         if (dist < minDist) {
             minDist = dist;
             closest = i;
         }
     }
 
-    if (minDist <= (Math.min(blocks[closest].width, blocks[closest].height)/2) + 20) {
+    if (minDist <= (Math.min(items[closest].width, items[closest].height)/2) + 20) {
         return closest;
     }
     return -1;
@@ -36,7 +41,7 @@ function findClosestBlock(blocks: Array<Block>, point: {x: number, y: number}): 
 function findBlockOnClick(blocks: Array<Block>, point: {x: number, y: number}):
     {blocksCopy: Array<Block>, closestBlock: Block | null} {
 
-    const closestBlockIdx: number = findClosestBlock(blocks, point);
+    const closestBlockIdx: number = findClosestItem(blocks, point);
     const newBlocks: Array<Block> = new Array(blocks.length);
 
 
@@ -84,20 +89,47 @@ export function SketchCanvas(props: SketchProps) {
     const [blocks, setBlocks] = useState(getUpdatedBlocks());
     const [addOns, setAddOns] = useState(getUpdatedAddOns());
 
-    const [currentBlock, setCurrentBlock] = useState(null);
-    const [currentAddOn, setCurrentAddOn] = useState(null);
+    const [currentBlock, setCurrentBlock] = useState(null as Block | null);
+    const [currentAddOn, setCurrentAddOn] = useState(null as AddOn | null);
 
     const canvasRef: React.MutableRefObject<HTMLCanvasElement | null> = useRef(null);
 
+    function handleClick(e: React.MouseEvent<HTMLCanvasElement>): void {
+        //update the current block and addOn
+        const closestBlockIdx: number = findClosestItem(blocks, {x: e.clientX, y: e.clientY});
+        const closestAddOnIdx: number = findClosestItem(addOns, {x: e.clientX, y: e.clientY});
+
+        if (closestBlockIdx === -1 && closestAddOnIdx === -1) {
+            setCurrentBlock(null);
+            setCurrentAddOn(null);
+        } else if (closestBlockIdx === -1) {
+            setCurrentBlock(null);
+            setCurrentAddOn(addOns[closestAddOnIdx]);
+        } else if (closestAddOnIdx === -1) {
+            setCurrentBlock(blocks[closestBlockIdx]);
+            setCurrentAddOn(null);
+        } else {
+            const selectedBlock: Block = blocks[closestBlockIdx];
+            const selectedAddOn: AddOn = addOns[closestAddOnIdx];
+            
+            if (distance({x: e.clientX, y: e.clientY}, {x: selectedBlock.x, y: selectedBlock.y}) < distance({x: e.clientX, y: e.clientY}, {x: selectedAddOn.x, y: selectedAddOn.y})) {
+                setCurrentBlock(selectedBlock);
+                setCurrentAddOn(null);
+            } else {
+                setCurrentBlock(null);
+                setCurrentAddOn(selectedAddOn);
+            }
+        }
+    }
+    
     function handleMouseDown(e: React.MouseEvent<HTMLCanvasElement>): void {
         setMouseDown(true);
-
-        //update the current block and addOn
-
     }
 
-    function handleMouseUp(): void {
+    function handleMouseUp(e: React.MouseEvent<HTMLCanvasElement>): void {
+
         setMouseDown(false);
+
         props.setCache(prevCache => {
             const newEntry : CacheEntry = {
                 blocks: blocks,

@@ -9,7 +9,12 @@ export type Block = {
 
 export type AddOn = {
    label: string,
-   image: HTMLImageElement
+   image: HTMLImageElement,
+   x: number,
+   y: number,
+   width: number,
+   height: number,
+   angle: number
 }
 
 export type Dimension = {
