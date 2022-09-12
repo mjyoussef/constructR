@@ -8,13 +8,39 @@ type SketchProps = {
     setCache: React.Dispatch<React.SetStateAction<SketchCache>>
 }
 
+function findClosestBlock(blocks: Array<Block>, point: {x: number, y: number}): number {
+    if (blocks.length === 0) {
+        return -1;
+    }
+
+    let closest: number = 0;
+    let minDist: number = Number.MAX_VALUE;
+
+    for (let i=0; i<blocks.length; i++) {
+        let xDist: number = point.x - blocks[i].x;
+        let yDist: number = point.y - blocks[i].y;
+
+        let dist: number = Math.sqrt(Math.pow(xDist, 2) + Math.pow(yDist, 2));
+        if (dist < minDist) {
+            minDist = dist;
+            closest = i;
+        }
+    }
+
+    if (minDist <= (Math.min(blocks[closest].width, blocks[closest].height)/2) + 20) {
+        return closest;
+    }
+    return -1;
+}
+
 function findBlockOnClick(blocks: Array<Block>, point: {x: number, y: number}):
     {blocksCopy: Array<Block>, closestBlock: Block | null} {
 
-    let newBlocks: Array<Block> = new Array(blocks.length);
+    const closestBlockIdx: number = findClosestBlock(blocks, point);
+    const newBlocks: Array<Block> = new Array(blocks.length);
 
-    let closestBlock = null;
-    let minDist: number = Number.MAX_VALUE;
+
+    let closestBlock: Block | null = null;
 
     for (let i=0; i<blocks.length; i++) {
 
@@ -23,26 +49,14 @@ function findBlockOnClick(blocks: Array<Block>, point: {x: number, y: number}):
             ...blocks[i]
         };
 
-        let xDist: number = point.x - newBlocks[i].x;
-        let yDist: number = point.y - newBlocks[i].y;
-
-        let dist: number = Math.sqrt(Math.pow(xDist, 2) + Math.pow(yDist, 2));
-
-        if (dist < minDist) {
-            minDist = dist;
+        if (i === closestBlockIdx) {
             closestBlock = newBlocks[i];
         }
     }
 
     const output: {blocksCopy: Array<Block>, closestBlock: Block | null} = {
         blocksCopy: newBlocks,
-        closestBlock: null
-    }
-
-    if (closestBlock !== null) {
-        if (minDist <= (Math.min(closestBlock.width, closestBlock.height)/2) + 20) {
-            output.closestBlock = closestBlock;
-        }
+        closestBlock: closestBlock
     }
 
     return output;
@@ -70,10 +84,16 @@ export function SketchCanvas(props: SketchProps) {
     const [blocks, setBlocks] = useState(getUpdatedBlocks());
     const [addOns, setAddOns] = useState(getUpdatedAddOns());
 
+    const [currentBlock, setCurrentBlock] = useState(null);
+    const [currentAddOn, setCurrentAddOn] = useState(null);
+
     const canvasRef: React.MutableRefObject<HTMLCanvasElement | null> = useRef(null);
 
-    function handleMouseDown(): void {
+    function handleMouseDown(e: React.MouseEvent<HTMLCanvasElement>): void {
         setMouseDown(true);
+
+        //update the current block and addOn
+
     }
 
     function handleMouseUp(): void {

@@ -9,10 +9,13 @@ type LibraryProps = {
     libraryAddOns: Array<AddOn>
 }
 
+//arbitrarily chose initial dimensions
 const defaultWidth = 1000;
 const defaultHeight = 80;
+
 const defaultColor = "red";
 
+//ratio of the library width to sketch width is 1:4
 const rescalingFactor = 4;
 
 export function Library(props: LibraryProps) {
