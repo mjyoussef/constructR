@@ -88,40 +88,42 @@ export function SketchCanvas(props: SketchProps) {
 
     const [blocks, setBlocks] = useState(getUpdatedBlocks());
     const [addOns, setAddOns] = useState(getUpdatedAddOns());
+    const [madeChange, setMadeChange] = useState(false);
 
-    const [currentBlock, setCurrentBlock] = useState(null as Block | null);
-    const [currentAddOn, setCurrentAddOn] = useState(null as AddOn | null);
+    const [currentBlock, setCurrentBlock] = useState(-1);
+    const [currentAddOn, setCurrentAddOn] = useState(-1);
 
     const canvasRef: React.MutableRefObject<HTMLCanvasElement | null> = useRef(null);
 
     function handleClick(e: React.MouseEvent<HTMLCanvasElement>): void {
+
         //update the current block and addOn
         const closestBlockIdx: number = findClosestItem(blocks, {x: e.clientX, y: e.clientY});
         const closestAddOnIdx: number = findClosestItem(addOns, {x: e.clientX, y: e.clientY});
 
         if (closestBlockIdx === -1 && closestAddOnIdx === -1) {
-            setCurrentBlock(null);
-            setCurrentAddOn(null);
+            setCurrentBlock(-1);
+            setCurrentAddOn(-1);
         } else if (closestBlockIdx === -1) {
-            setCurrentBlock(null);
-            setCurrentAddOn(addOns[closestAddOnIdx]);
+            setCurrentBlock(-1);
+            setCurrentAddOn(closestAddOnIdx);
         } else if (closestAddOnIdx === -1) {
-            setCurrentBlock(blocks[closestBlockIdx]);
-            setCurrentAddOn(null);
+            setCurrentBlock(closestBlockIdx);
+            setCurrentAddOn(-1);
         } else {
             const selectedBlock: Block = blocks[closestBlockIdx];
             const selectedAddOn: AddOn = addOns[closestAddOnIdx];
             
             if (distance({x: e.clientX, y: e.clientY}, {x: selectedBlock.x, y: selectedBlock.y}) < distance({x: e.clientX, y: e.clientY}, {x: selectedAddOn.x, y: selectedAddOn.y})) {
-                setCurrentBlock(selectedBlock);
-                setCurrentAddOn(null);
+                setCurrentBlock(closestBlockIdx);
+                setCurrentAddOn(-1);
             } else {
-                setCurrentBlock(null);
-                setCurrentAddOn(selectedAddOn);
+                setCurrentBlock(-1);
+                setCurrentAddOn(closestAddOnIdx);
             }
         }
     }
-    
+
     function handleMouseDown(e: React.MouseEvent<HTMLCanvasElement>): void {
         setMouseDown(true);
     }
@@ -131,6 +133,11 @@ export function SketchCanvas(props: SketchProps) {
         setMouseDown(false);
 
         props.setCache(prevCache => {
+            if (!madeChange) {
+                return prevCache;
+            }
+
+            setMadeChange(false);
             const newEntry : CacheEntry = {
                 blocks: blocks,
                 addOns: addOns
@@ -169,6 +176,7 @@ export function SketchCanvas(props: SketchProps) {
                     const selectedBlock = newBlocksObj.closestBlock;
 
                     if (selectedBlock !== null) {
+                        setMadeChange(true);
                         selectedBlock.x = coords.x;
                         selectedBlock.y = coords.y;
                         return newBlocksObj.blocksCopy;
@@ -179,6 +187,8 @@ export function SketchCanvas(props: SketchProps) {
         }
     }
 
+    //updates the current set of blocks / addOns if they are 
+    // added from the library
     useEffect(() => {
         if (!mouseDown) {
             setBlocks(getUpdatedBlocks());
@@ -186,7 +196,7 @@ export function SketchCanvas(props: SketchProps) {
         }
     }, [props.cache]);
 
-    // clears and displays blocks on sketch canvas at every rerender
+    // clears and displays blocks / addOns on sketch canvas at every rerender
     useEffect(() => {
         if (canvasRef.current !== null) {
             const canvas: HTMLCanvasElement = canvasRef.current;
@@ -199,6 +209,10 @@ export function SketchCanvas(props: SketchProps) {
                 for (let i=0; i<blocks.length; i++) {
                     beam(context, blocks[i]);
                 }
+
+                //add addOns to the canvas
+                //
+                //
             }
         }
     });
@@ -212,6 +226,7 @@ export function SketchCanvas(props: SketchProps) {
             onMouseDown={handleMouseDown}
             onMouseUp={handleMouseUp}
             onMouseMove={handleMouseMove}
+            onClick={handleClick}
             />
     );
 }

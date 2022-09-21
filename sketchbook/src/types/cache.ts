@@ -78,9 +78,7 @@ export class SketchCache {
            }
       }
 
-      const output: SketchCache = this.addEntry(newEntry);
-      console.log(output);
-      return output;
+      return this.addEntry(newEntry);
     }
  
     /**
