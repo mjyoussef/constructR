@@ -26,7 +26,8 @@ export function Beam(props: BeamProps) {
                 width: props.width,
                 height: props.height,
                 angle: 0,
-                color: props.color
+                color: props.color,
+                type: "Block"
             }
 
             if (context !== null) {

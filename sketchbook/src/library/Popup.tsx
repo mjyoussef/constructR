@@ -27,7 +27,8 @@ export function Popup(props: PopupProps) {
                     y: 0,
                     width: image.width,
                     height: image.height,
-                    angle: 0
+                    angle: 0,
+                    type: "AddOn"
                 }
                 props.setLibraryAddOns(prev => [...prev, newAddOn]);
             }

@@ -4,7 +4,8 @@ export type Block = {
    width: number,
    height: number,
    angle: number,
-   color: string
+   color: string,
+   type: "Block"
 }
 
 export type AddOn = {
@@ -14,7 +15,8 @@ export type AddOn = {
    y: number,
    width: number,
    height: number,
-   angle: number
+   angle: number,
+   type: "AddOn"
 }
 
 export type Dimension = {

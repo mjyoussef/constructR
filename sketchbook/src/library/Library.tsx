@@ -30,14 +30,14 @@ export function Library(props: LibraryProps) {
             width: defaultWidth/4,
             height: defaultHeight/4,
             angle: 0,
-            color: defaultColor
+            color: defaultColor,
+            type: "Block"
         }
 
         setNextX(nextX + 10);
         setNextY(nextY + 10);
 
         props.setCache(prevCache => {
-            console.log(prevCache);
             return prevCache.addBlock(newBlock);
         });
     }
