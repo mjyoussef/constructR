@@ -9,8 +9,6 @@ import {Popup} from './library/Popup';
 function App() {
 
   const [addOnInfo, setAddOnInfo] = useState(new Array<AddOnInfo>());
-  console.log(addOnInfo);
-
   const [popupTrigger, setPopupTrigger] = useState(false);
 
   const [cache, setCache] = useState(new SketchCache(new Array<CacheEntry>(), -1));

@@ -1,7 +1,8 @@
 import {useState, Dispatch, SetStateAction} from 'react';
 import {Block, AddOn, AddOnInfo} from '../types/uiObjects';
-import {CacheEntry, SketchCache} from '../types/cache';
+import {SketchCache} from '../types/cache';
 import {Beam} from './Beam';
+import {LibraryAddOn} from './LibraryAddOn';
 
 type LibraryProps = {
     setCache: Dispatch<SetStateAction<SketchCache>>,
@@ -9,9 +10,11 @@ type LibraryProps = {
     addOnInfo: Array<AddOnInfo>
 }
 
-//arbitrarily chose initial dimensions
+//arbitrarily chose initial dimensions for beams
 const defaultWidth = 1000;
 const defaultHeight = 80;
+
+const defaultImgRestriction = 200;
 
 const defaultColor = "red";
 
@@ -42,6 +45,9 @@ export function Library(props: LibraryProps) {
         });
     }
 
+    //tracks keys for each add-on component
+    let counter = 0;
+
     return (
         <div className={"flex flex-col m-2 items-stretch"}>
             <div className={"self-end mt-1 mb-16 mx-1"}>
@@ -62,6 +68,15 @@ export function Library(props: LibraryProps) {
                 </button>
             </div>
             <Beam width={defaultWidth} height={defaultHeight} color={defaultColor}/>
+            {props.addOnInfo.map(addOn => {
+                return <LibraryAddOn 
+                        key={counter++}
+                        info={addOn}
+                        setCache={props.setCache}
+                        restriction={defaultImgRestriction}
+                        x={nextX}
+                        y={nextY}/>
+            })}
         </div>
     )
 }
