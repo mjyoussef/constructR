@@ -5,7 +5,7 @@ export type Block = {
    height: number,
    angle: number,
    color: string,
-   type: "Block"
+   type: string
 }
 
 export type AddOn = {
@@ -16,7 +16,12 @@ export type AddOn = {
    width: number,
    height: number,
    angle: number,
-   type: "AddOn"
+   type: string
+}
+
+export type AddOnInfo = {
+   label: string,
+   image: HTMLImageElement
 }
 
 export type Dimension = {

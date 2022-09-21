@@ -1,11 +1,11 @@
-import {Block} from '../types/uiObjects';
+import {Block, AddOn} from '../types/uiObjects';
 
 export function beam(context: CanvasRenderingContext2D, info: Block): void {
     //context.rotate(info.angle * (Math.PI/180));
 
     context.save();
-    context.beginPath();
     context.fillStyle = info.color;
+    context.beginPath();
     context.translate(info.x, info.y);
     context.fillRect(-(info.width/2), -(info.height/2), info.width, info.height);
 
@@ -31,5 +31,15 @@ export function beam(context: CanvasRenderingContext2D, info: Block): void {
     context.closePath();
     context.fill();
 
+    context.restore();
+}
+
+export function displayAddOn(context: CanvasRenderingContext2D, info: AddOn): void {
+    context.save();
+
+    context.translate(info.x, info.y);
+    context.rotate(info.angle);
+    context.drawImage(info.image, -(info.width/2), -(info.height/2), info.width, info.height);
+    
     context.restore();
 }

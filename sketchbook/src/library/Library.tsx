@@ -1,12 +1,12 @@
 import {useState, Dispatch, SetStateAction} from 'react';
-import {Block, AddOn} from '../types/uiObjects';
+import {Block, AddOn, AddOnInfo} from '../types/uiObjects';
 import {CacheEntry, SketchCache} from '../types/cache';
 import {Beam} from './Beam';
 
 type LibraryProps = {
     setCache: Dispatch<SetStateAction<SketchCache>>,
     setPopupTrigger: Dispatch<SetStateAction<boolean>>,
-    libraryAddOns: Array<AddOn>
+    addOnInfo: Array<AddOnInfo>
 }
 
 //arbitrarily chose initial dimensions
