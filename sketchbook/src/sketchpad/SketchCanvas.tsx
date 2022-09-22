@@ -110,6 +110,7 @@ function getClickCoordinates(x: number, y: number, canvasRef: React.MutableRefOb
 
 export function SketchCanvas(props: SketchProps) {
     const [mouseDown, setMouseDown] = useState(false);
+    const keysPressed = useRef(new Set<string>());
 
     // Use the state of the blocks array and the add-ons array at the specified idx.
     // Once the user has finished repositioning blocks and/or add-ons (notified by mouse up event),
@@ -246,23 +247,61 @@ export function SketchCanvas(props: SketchProps) {
                         return {...addOn};
                     });
 
-                    const selectedItem: Block | AddOn | null = findSelectedItem(updatedBlocks, updatedAddOns, coords);
-                    if (selectedItem !== null) {
-                        setMadeChange(true);
-                        selectedItem.x = coords.x;
-                        selectedItem.y = coords.y;
+                    if (keysPressed.current.has("r")) {
+                        let selectedItem: Block | AddOn | null = null; 
+                        if (currentBlock === -1 && currentAddOn >= 0) {
+                            selectedItem = updatedAddOns[currentAddOn];
+                        }
+                        if (currentBlock >= 0 && currentAddOn === -1) {
+                            selectedItem = updatedBlocks[currentBlock];
+                        }
 
-                        return {
-                            blocks: updatedBlocks,
-                            addOns: updatedAddOns
+                        if (selectedItem !== null) {
+                            const angle = Math.atan2((coords.y - selectedItem.y), (coords.x - selectedItem.x));
+                            selectedItem.angle = angle * (180/Math.PI);
+                        }
+                    } else if (keysPressed.current.has("Control")) {
+                        if (currentBlock === -1 && currentAddOn >= 0) {
+                            //
+                        }
+                        if (currentBlock >= 0 && currentAddOn === -1) {
+                            //
+                        }
+                    } else {
+                        const selectedItem: Block | AddOn | null = findSelectedItem(updatedBlocks, updatedAddOns, coords);
+                        if (selectedItem !== null) {
+                            setMadeChange(true);
+                            selectedItem.x = coords.x;
+                            selectedItem.y = coords.y;
                         }
                     }
 
-                    return prevEntry;
+                    return {
+                        blocks: updatedBlocks,
+                        addOns: updatedAddOns
+                    };
                 });
             }
         }
     }
+
+    useEffect(() => {
+        function handleKeyDown(e: KeyboardEvent) {
+            keysPressed.current.add(e.key);
+        }
+    
+        function handleKeyUp(e: KeyboardEvent) {
+            keysPressed.current.delete(e.key);
+        }
+
+        window.addEventListener("keydown", handleKeyDown);
+        window.addEventListener("keyup", handleKeyUp);
+
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+            window.removeEventListener("keyup", handleKeyUp);
+        }
+    }, []);
 
     // updates the current set of blocks / addOns if they are 
     // added from the library

@@ -1,12 +1,11 @@
 import {Block, AddOn} from '../types/uiObjects';
 
 export function beam(context: CanvasRenderingContext2D, info: Block): void {
-    //context.rotate(info.angle * (Math.PI/180));
-
     context.save();
     context.fillStyle = info.color;
     context.beginPath();
     context.translate(info.x, info.y);
+    context.rotate(info.angle * (Math.PI/180));
     context.fillRect(-(info.width/2), -(info.height/2), info.width, info.height);
 
     const padding = info.width/60;
