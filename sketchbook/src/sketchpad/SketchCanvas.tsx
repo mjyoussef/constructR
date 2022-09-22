@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useRef} from 'react';
-import { beam } from '../utilities/drawer';
+import { beam, displayAddOn } from '../utilities/drawer';
 import {Block, AddOn} from '../types/uiObjects';
 import {CacheEntry, SketchCache} from '../types/cache';
 
@@ -290,7 +290,7 @@ export function SketchCanvas(props: SketchProps) {
                 }
 
                 for (let i=0; i<entry.addOns.length; i++) {
-                    // display the AddOn index i
+                    displayAddOn(context, entry.addOns[i]);
                 }
             }
         }

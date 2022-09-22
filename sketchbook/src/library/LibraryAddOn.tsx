@@ -1,4 +1,3 @@
-import { maxHeaderSize } from 'http';
 import React, {useEffect, useRef, Dispatch, SetStateAction} from 'react';
 import {SketchCache} from '../types/cache';
 import {AddOn, AddOnInfo} from '../types/uiObjects';
@@ -9,7 +8,9 @@ type LibraryAddOnProps = {
     setCache: Dispatch<SetStateAction<SketchCache>>,
     restriction: number,
     x: number,
-    y: number
+    y: number,
+    setNextX: Dispatch<SetStateAction<number>>,
+    setNextY: Dispatch<SetStateAction<number>>
 }
 
 function resizeFactorOf(image: HTMLImageElement, width: number, height: number): number {
@@ -51,17 +52,26 @@ export function LibraryAddOn(props: LibraryAddOnProps) {
         const heightResizeFactor = (props.info.image.naturalHeight) / props.restriction;
 
         const resizeFactor = resizeFactorOf(props.info.image, props.restriction, props.restriction);
+        const width = props.info.image.naturalWidth / resizeFactor;
+        const height = props.info.image.naturalHeight / resizeFactor;
 
         const newAddOn: AddOn = {
             label: props.info.label,
             image: props.info.image,
-            x: props.x,
-            y: props.y,
-            width: (props.info.image.naturalWidth / resizeFactor),
-            height: (props.info.image.naturalHeight / resizeFactor),
+            x: props.x + (width/2),
+            y: props.y + (height/2),
+            width: width,
+            height: height,
             angle: 0,
             type: "AddOn"
         }
+
+        props.setNextX(prev => {
+            return prev + 10;
+        });
+        props.setNextY(prev => {
+            return prev + 10;
+        });
 
         props.setCache(prevCache => {
             return prevCache.addAddOn(newAddOn);

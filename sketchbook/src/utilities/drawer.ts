@@ -38,7 +38,7 @@ export function displayAddOn(context: CanvasRenderingContext2D, info: AddOn): vo
     context.save();
 
     context.translate(info.x, info.y);
-    context.rotate(info.angle);
+    context.rotate(info.angle * (Math.PI/180));
     context.drawImage(info.image, -(info.width/2), -(info.height/2), info.width, info.height);
     
     context.restore();

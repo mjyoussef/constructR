@@ -23,8 +23,11 @@ const rescalingFactor = 4;
 
 export function Library(props: LibraryProps) {
 
-    const [nextX, setNextX] = useState((defaultWidth/2)/rescalingFactor);
-    const [nextY, setNextY] = useState((defaultHeight/2)/rescalingFactor);
+    const [nextX, setNextX] = useState((defaultWidth/8));
+    const [nextY, setNextY] = useState((defaultHeight/8));
+
+    const [nextAddOnX, setNextAddOnX] = useState(defaultImgRestriction/4);
+    const [nextAddOnY, setNextAddOnY] = useState(defaultImgRestriction/4);
 
     function addBlockHandler() {
         const newBlock: Block = {
@@ -74,8 +77,10 @@ export function Library(props: LibraryProps) {
                         info={addOn}
                         setCache={props.setCache}
                         restriction={defaultImgRestriction}
-                        x={nextX}
-                        y={nextY}/>
+                        x={nextAddOnX}
+                        y={nextAddOnX}
+                        setNextX={setNextAddOnX}
+                        setNextY={setNextAddOnY}/>
             })}
         </div>
     )
