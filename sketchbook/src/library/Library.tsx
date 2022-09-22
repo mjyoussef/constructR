@@ -1,22 +1,33 @@
 import {useState, Dispatch, SetStateAction} from 'react';
-import {Block, AddOn} from '../types/uiObjects';
-import {CacheEntry, SketchCache} from '../types/cache';
+import {Block, AddOn, AddOnInfo} from '../types/uiObjects';
+import {SketchCache} from '../types/cache';
 import {Beam} from './Beam';
+import {LibraryAddOn} from './LibraryAddOn';
 
 type LibraryProps = {
     setCache: Dispatch<SetStateAction<SketchCache>>,
     setPopupTrigger: Dispatch<SetStateAction<boolean>>,
-    libraryAddOns: Array<AddOn>
+    addOnInfo: Array<AddOnInfo>
 }
 
+//arbitrarily chose initial dimensions for beams
 const defaultWidth = 1000;
 const defaultHeight = 80;
+
+const defaultImgRestriction = 200;
+
 const defaultColor = "red";
+
+//ratio of the library width to sketch width is 1:4
+const rescalingFactor = 4;
 
 export function Library(props: LibraryProps) {
 
-    const [nextX, setNextX] = useState(0);
-    const [nextY, setNextY] = useState(0);
+    const [nextX, setNextX] = useState((defaultWidth/8));
+    const [nextY, setNextY] = useState((defaultHeight/8));
+
+    const [nextAddOnX, setNextAddOnX] = useState(defaultImgRestriction/4);
+    const [nextAddOnY, setNextAddOnY] = useState(defaultImgRestriction/4);
 
     function addBlockHandler() {
         const newBlock: Block = {
@@ -25,17 +36,20 @@ export function Library(props: LibraryProps) {
             width: defaultWidth/4,
             height: defaultHeight/4,
             angle: 0,
-            color: defaultColor
+            color: defaultColor,
+            type: "Block"
         }
 
         setNextX(nextX + 10);
         setNextY(nextY + 10);
 
         props.setCache(prevCache => {
-            console.log(prevCache);
             return prevCache.addBlock(newBlock);
         });
     }
+
+    //tracks keys for each add-on component
+    let counter = 0;
 
     return (
         <div className={"flex flex-col m-2 items-stretch"}>
@@ -57,6 +71,17 @@ export function Library(props: LibraryProps) {
                 </button>
             </div>
             <Beam width={defaultWidth} height={defaultHeight} color={defaultColor}/>
+            {props.addOnInfo.map(addOn => {
+                return <LibraryAddOn 
+                        key={counter++}
+                        info={addOn}
+                        setCache={props.setCache}
+                        restriction={defaultImgRestriction}
+                        x={nextAddOnX}
+                        y={nextAddOnX}
+                        setNextX={setNextAddOnX}
+                        setNextY={setNextAddOnY}/>
+            })}
         </div>
     )
 }

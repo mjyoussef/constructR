@@ -1,10 +1,10 @@
 import React, { useState, Dispatch, SetStateAction } from 'react';
-import {AddOn} from '../types/uiObjects';
+import {AddOnInfo} from '../types/uiObjects';
 
 type PopupProps = {
     trigger: boolean,
     setPopupTrigger: Dispatch<SetStateAction<boolean>>,
-    setLibraryAddOns: Dispatch<SetStateAction<AddOn[]>>
+    setAddOnInfo: Dispatch<SetStateAction<AddOnInfo[]>>
 }
 
 export function Popup(props: PopupProps) {
@@ -20,11 +20,11 @@ export function Popup(props: PopupProps) {
                 const image: HTMLImageElement = new Image();
                 image.src = fileReader.result as string;
 
-                const newAddOn: AddOn = {
+                const newAddOn: AddOnInfo = {
                     label: componentName,
                     image: image
                 }
-                props.setLibraryAddOns(prev => [...prev, newAddOn]);
+                props.setAddOnInfo(prev => [...prev, newAddOn]);
             }
             fileReader.readAsDataURL(file);
         }

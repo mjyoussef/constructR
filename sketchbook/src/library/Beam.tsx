@@ -17,8 +17,8 @@ export function Beam(props: BeamProps) {
             const canvas : HTMLCanvasElement = canvasRef.current;
             const context = canvas.getContext('2d');
 
-            const x = (canvas.width/2) - (props.width/2);
-            const y = (canvas.height/5) - (props.height/2);
+            const x = (canvas.width/2);
+            const y = (canvas.height/5);
 
             const displayBeam: Block = {
                 x: x,
@@ -26,7 +26,8 @@ export function Beam(props: BeamProps) {
                 width: props.width,
                 height: props.height,
                 angle: 0,
-                color: props.color
+                color: props.color,
+                type: "Block"
             }
 
             if (context !== null) {

@@ -4,10 +4,22 @@ export type Block = {
    width: number,
    height: number,
    angle: number,
-   color: string
+   color: string,
+   type: string
 }
 
 export type AddOn = {
+   label: string,
+   image: HTMLImageElement,
+   x: number,
+   y: number,
+   width: number,
+   height: number,
+   angle: number,
+   type: string
+}
+
+export type AddOnInfo = {
    label: string,
    image: HTMLImageElement
 }
