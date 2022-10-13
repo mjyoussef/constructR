@@ -1,3 +1,4 @@
+
 export type Block = {
    x: number,
    y: number,
@@ -5,7 +6,7 @@ export type Block = {
    height: number,
    angle: number,
    color: string,
-   type: string
+   type: string //hardcodes "Block"
 }
 
 export type AddOn = {
@@ -16,7 +17,7 @@ export type AddOn = {
    width: number,
    height: number,
    angle: number,
-   type: string
+   type: string //hardcodes "AddOn"
 }
 
 export type AddOnInfo = {

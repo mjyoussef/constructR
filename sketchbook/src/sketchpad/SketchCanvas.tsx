@@ -110,6 +110,7 @@ function getClickCoordinates(x: number, y: number, canvasRef: React.MutableRefOb
 
 export function SketchCanvas(props: SketchProps) {
     const [mouseDown, setMouseDown] = useState(false);
+    const [startCoords, setStartCoords]= useState(null as null | {x: number, y: number});
     const keysPressed = useRef(new Set<string>());
 
     // Use the state of the blocks array and the add-ons array at the specified idx.
@@ -200,6 +201,7 @@ export function SketchCanvas(props: SketchProps) {
     function handleMouseUp(e: React.MouseEvent<HTMLCanvasElement>): void {
 
         setMouseDown(false);
+        setStartCoords(null);
 
         props.setCache(prevCache => {
             if (!madeChange) {
@@ -247,7 +249,7 @@ export function SketchCanvas(props: SketchProps) {
                         return {...addOn};
                     });
 
-                    if (keysPressed.current.has("r")) {
+                    if (keysPressed.current.size > 0 && (currentBlock >= 0 || currentAddOn >= 0)) {
                         let selectedItem: Block | AddOn | null = null; 
                         if (currentBlock === -1 && currentAddOn >= 0) {
                             selectedItem = updatedAddOns[currentAddOn];
@@ -257,18 +259,34 @@ export function SketchCanvas(props: SketchProps) {
                         }
 
                         if (selectedItem !== null) {
-                            const angle = Math.atan2((coords.y - selectedItem.y), (coords.x - selectedItem.x));
-                            selectedItem.angle = angle * (180/Math.PI);
-                        }
-                    } else if (keysPressed.current.has("Control")) {
-                        if (currentBlock === -1 && currentAddOn >= 0) {
-                            //
-                        }
-                        if (currentBlock >= 0 && currentAddOn === -1) {
-                            //
+                            if (keysPressed.current.has("r")) {
+                                const angle = Math.atan2((coords.y - selectedItem.y), (coords.x - selectedItem.x));
+                                selectedItem.angle = angle * (180/Math.PI);
+                            } else {
+                                if (startCoords !== null) {
+                                    let deltaW = 0;
+                                    let deltaH = 0;
+                                    if (keysPressed.current.has("Shift")) {
+                                        deltaW = coords.x - startCoords.x;
+                                        deltaH = coords.y - startCoords.y;
+
+                                        console.log(deltaW);
+                                        console.log(deltaW);
+                                    }
+
+                                    const width = Math.max(40, deltaW*2);
+                                    const height = Math.max(20, deltaH*2);
+
+                                    selectedItem.width = width;
+                                    selectedItem.height = height;
+                                } else {
+                                    setStartCoords(coords);
+                                }
+                            }
                         }
                     } else {
                         const selectedItem: Block | AddOn | null = findSelectedItem(updatedBlocks, updatedAddOns, coords);
+
                         if (selectedItem !== null) {
                             setMadeChange(true);
                             selectedItem.x = coords.x;
