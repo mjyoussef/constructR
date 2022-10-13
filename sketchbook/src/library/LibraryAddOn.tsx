@@ -48,9 +48,6 @@ export function LibraryAddOn(props: LibraryAddOnProps) {
     });
 
     function addAddOnHandler() {
-        const widthResizeFactor = (props.info.image.naturalWidth) / props.restriction;
-        const heightResizeFactor = (props.info.image.naturalHeight) / props.restriction;
-
         const resizeFactor = resizeFactorOf(props.info.image, props.restriction, props.restriction);
         const width = props.info.image.naturalWidth / resizeFactor;
         const height = props.info.image.naturalHeight / resizeFactor;
@@ -72,7 +69,6 @@ export function LibraryAddOn(props: LibraryAddOnProps) {
         props.setNextY(prev => {
             return prev + 10;
         });
-
         props.setCache(prevCache => {
             return prevCache.addAddOn(newAddOn);
         });

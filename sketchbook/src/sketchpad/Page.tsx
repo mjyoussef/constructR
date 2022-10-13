@@ -2,7 +2,6 @@ import {Dispatch, SetStateAction} from 'react';
 import {CacheEntry, SketchCache} from '../types/cache';
 import {SketchCanvas} from './SketchCanvas';
 
-
 type PageProps = {
     cache: SketchCache,
     setCache: Dispatch<SetStateAction<SketchCache>>
@@ -37,7 +36,7 @@ export function Page(props: PageProps) {
                     }}>
                     Clear Sketch
                 </button>
-                <div className={""}>
+                <div>
                     <img 
                         className={"object-scale-down w-12 mr-16 mt-3 p-2 hover:p-1"}
                         src={require("./images/forward_arrow.png")}
@@ -52,7 +51,7 @@ export function Page(props: PageProps) {
                         onClick={() => updateFromCache(-1)} />
                 </div>
             </div>
-            <div className={""}>
+            <div>
                 <SketchCanvas cache={props.cache} setCache={props.setCache}/>
             </div>
         </div>

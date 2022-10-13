@@ -1,5 +1,5 @@
 import {useState, Dispatch, SetStateAction} from 'react';
-import {Block, AddOn, AddOnInfo} from '../types/uiObjects';
+import {Block, AddOnInfo} from '../types/uiObjects';
 import {SketchCache} from '../types/cache';
 import {Beam} from './Beam';
 import {LibraryAddOn} from './LibraryAddOn';
@@ -17,9 +17,6 @@ const defaultHeight = 80;
 const defaultImgRestriction = 200;
 
 const defaultColor = "red";
-
-//ratio of the library width to sketch width is 1:4
-const rescalingFactor = 4;
 
 export function Library(props: LibraryProps) {
 
@@ -78,10 +75,10 @@ export function Library(props: LibraryProps) {
                         setCache={props.setCache}
                         restriction={defaultImgRestriction}
                         x={nextAddOnX}
-                        y={nextAddOnX}
+                        y={nextAddOnY}
                         setNextX={setNextAddOnX}
                         setNextY={setNextAddOnY}/>
             })}
         </div>
-    )
+    );
 }
