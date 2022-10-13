@@ -6,8 +6,8 @@ export type CacheEntry = {
  }
  
 export class SketchCache {
-    cache: Array<CacheEntry>;
-    idx: number;
+    cache: Array<CacheEntry>; //an array of states
+    idx: number; //index of the current state in `cache`
  
     constructor(cache: Array<CacheEntry>, idx: number) {
        this.cache = cache;
@@ -45,12 +45,13 @@ export class SketchCache {
      */
     addEntry(entry: CacheEntry): SketchCache {
        const newCacheEntries: Array<CacheEntry> = new Array(this.cache.length+1);
-       newCacheEntries[this.idx+1] = entry;
+       newCacheEntries[this.idx+1] = entry; //new entry is added after the current state
  
        for (let i=0; i<=this.idx; i++) {
           newCacheEntries[i] = this.cache[i];
        }
- 
+
+       // shift entries after `idx+1` 1 index to the right
        for (let i=this.idx+1; i<this.cache.length; i++) {
           newCacheEntries[i+1] = this.cache[i];
        }
@@ -60,7 +61,7 @@ export class SketchCache {
 
 
     /**
-     * Creates a new CacheEntry (from the current CacheEntry) and adds a new block 
+     * Creates a new CacheEntry (from the current CacheEntry) and adds a new block
      * @param block a new block that is to be added to the current entry's array of blocks
      * @returns a new SketchCache
      */
@@ -72,6 +73,8 @@ export class SketchCache {
 
       if (this.idx > -1) {
          const currentEntry: CacheEntry = this.cache[this.idx];
+
+         // add the block to a copy of the current state
          newEntry = {
             blocks: [...currentEntry.blocks, block],
             addOns: currentEntry.addOns
@@ -94,6 +97,8 @@ export class SketchCache {
 
       if (this.idx > -1) {
          const currentEntry: CacheEntry = this.cache[this.idx];
+
+         // add the addOn to a copy of the current state
          newEntry = {
             blocks: currentEntry.blocks,
             addOns: [...currentEntry.addOns, addOn]
