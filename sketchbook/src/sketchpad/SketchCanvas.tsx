@@ -257,8 +257,11 @@ export function SketchCanvas(props: SketchProps) {
                             const theta_total = Math.atan2((coords.y - selectedItem.y), (coords.x - selectedItem.x));
                             const theta = theta_total - (selectedItem.angle * (Math.PI/180));
 
-                            selectedItem.width = 2 * Math.abs(dist * Math.cos(theta))
-                            selectedItem.height = 2 * Math.abs(dist * Math.sin(theta))
+
+                            // note: must multiply by 2 since width is measured end-to-end 
+                            // not from center to end
+                            selectedItem.width = 2 * Math.abs(dist * Math.cos(theta));
+                            selectedItem.height = 2 * Math.abs(dist * Math.sin(theta));
                         }
                     }
                 }
