@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import {useState} from 'react';
 import './App.css';
 import {AddOnInfo} from './types/uiObjects';
 import { CacheEntry, SketchCache } from './types/cache';
