@@ -44,6 +44,7 @@ function findClosestItem(items: Array<Block> | Array<AddOn>, point: {x: number, 
         }
     }
 
+    // update with an algorithm for checking if a point is inside a closed object
     if (minDist <= (Math.min(items[closest].width/2, items[closest].height)/2) + 20) {
         return closest;
     }
@@ -110,7 +111,6 @@ function getClickCoordinates(x: number, y: number, canvasRef: React.MutableRefOb
 
 export function SketchCanvas(props: SketchProps) {
     const [mouseDown, setMouseDown] = useState(false);
-    const [startCoords, setStartCoords]= useState(null as null | {x: number, y: number});
     const keysPressed = useRef(new Set<string>());
 
     // Use the state of the blocks array and the add-ons array at the specified idx.
@@ -152,27 +152,28 @@ export function SketchCanvas(props: SketchProps) {
      */
     function handleClick(e: React.MouseEvent<HTMLCanvasElement>): void {
 
-        //update the current block and addOn
         const coords: {x: number, y: number} | null = getClickCoordinates(e.clientX, e.clientY, canvasRef);
+
         let closestBlockIdx = -1;
         let closestAddOnIdx = -1;
+
         if (coords === null) {
             return;
-        } else {
+        } else { //find the closest block and addOn selected
             closestBlockIdx = findClosestItem(entry.blocks, coords);
             closestAddOnIdx = findClosestItem(entry.addOns, coords);
         }
 
-        if (closestBlockIdx === -1 && closestAddOnIdx === -1) {
+        if (closestBlockIdx === -1 && closestAddOnIdx === -1) { //neither a block nor addOn was selected
             setCurrentBlock(-1);
             setCurrentAddOn(-1);
-        } else if (closestBlockIdx === -1) {
+        } else if (closestBlockIdx === -1) { // addOn was selected
             setCurrentBlock(-1);
             setCurrentAddOn(closestAddOnIdx);
-        } else if (closestAddOnIdx === -1) {
+        } else if (closestAddOnIdx === -1) { // block was selected
             setCurrentBlock(closestBlockIdx);
             setCurrentAddOn(-1);
-        } else {
+        } else { // select the item that was closest
             const selectedBlock: Block = entry.blocks[closestBlockIdx];
             const selectedAddOn: AddOn = entry.addOns[closestAddOnIdx];
             
@@ -201,10 +202,9 @@ export function SketchCanvas(props: SketchProps) {
     function handleMouseUp(e: React.MouseEvent<HTMLCanvasElement>): void {
 
         setMouseDown(false);
-        setStartCoords(null);
 
         props.setCache(prevCache => {
-            if (!madeChange) {
+            if (!madeChange) { //if the mouse was never moved, don't recache the current entry
                 return prevCache;
             }
 
@@ -222,85 +222,61 @@ export function SketchCanvas(props: SketchProps) {
             return;
         }
 
-        if (canvasRef.current !== null) {
-            const canvas: HTMLCanvasElement = canvasRef.current;
-            const context = canvas.getContext('2d');
+        const coords: {x: number, y: number} | null = getClickCoordinates(e.clientX, e.clientY, canvasRef);
+        if (coords === null) {
+            return;
+        }
+        setEntry(prevEntry => {
+            const updatedBlocks: Array<Block> = prevEntry.blocks.map(block => {
+                return {...block};
+            });
+            const updatedAddOns: Array<AddOn> = prevEntry.addOns.map(addOn => {
+                return {...addOn};
+            });
 
-            if (context !== null) {
-                // look for the block that is the closest to the mouse click
-                let rec = canvas.getBoundingClientRect();
+            if (keysPressed.current.size > 0 && (currentBlock >= 0 || currentAddOn >= 0)) {
+                let selectedItem: Block | AddOn | null = null;
 
-                // don't update state if the click is outside the canvas 
-                if (e.clientX - rec.left < 0 || e.clientX - rec.right > 0 || 
-                    e.clientY - rec.top < 0 || e.clientY - rec.bottom > 0) {
-                    return;
+
+                // note that both will never be positive at the same time 
+                // (ie. a user cannot select both items)
+                if (currentBlock === -1 && currentAddOn >= 0) {
+                    selectedItem = updatedAddOns[currentAddOn];
+                }
+                if (currentBlock >= 0 && currentAddOn === -1) {
+                    selectedItem = updatedBlocks[currentBlock];
                 }
 
-                let coords: {x: number, y: number} = {
-                    x: e.clientX - rec.left,
-                    y: e.clientY - rec.top
-                }
-
-                setEntry(prevEntry => {
-                    const updatedBlocks: Array<Block> = prevEntry.blocks.map(block => {
-                        return {...block};
-                    });
-                    const updatedAddOns: Array<AddOn> = prevEntry.addOns.map(addOn => {
-                        return {...addOn};
-                    });
-
-                    if (keysPressed.current.size > 0 && (currentBlock >= 0 || currentAddOn >= 0)) {
-                        let selectedItem: Block | AddOn | null = null; 
-                        if (currentBlock === -1 && currentAddOn >= 0) {
-                            selectedItem = updatedAddOns[currentAddOn];
-                        }
-                        if (currentBlock >= 0 && currentAddOn === -1) {
-                            selectedItem = updatedBlocks[currentBlock];
-                        }
-
-                        if (selectedItem !== null) {
-                            if (keysPressed.current.has("r")) {
-                                const angle = Math.atan2((coords.y - selectedItem.y), (coords.x - selectedItem.x));
-                                selectedItem.angle = angle * (180/Math.PI);
-                            } else {
-                                if (startCoords !== null) {
-                                    let deltaW = 0;
-                                    let deltaH = 0;
-                                    if (keysPressed.current.has("Shift")) {
-                                        deltaW = coords.x - startCoords.x;
-                                        deltaH = coords.y - startCoords.y;
-
-                                        console.log(deltaW);
-                                        console.log(deltaW);
-                                    }
-
-                                    const width = Math.max(40, deltaW*2);
-                                    const height = Math.max(20, deltaH*2);
-
-                                    selectedItem.width = width;
-                                    selectedItem.height = height;
-                                } else {
-                                    setStartCoords(coords);
-                                }
-                            }
-                        }
+                if (selectedItem !== null) {
+                    if (keysPressed.current.has("r")) { //rotations
+                        const angle = Math.atan2((coords.y - selectedItem.y), (coords.x - selectedItem.x));
+                        selectedItem.angle = angle * (180/Math.PI);
                     } else {
-                        const selectedItem: Block | AddOn | null = findSelectedItem(updatedBlocks, updatedAddOns, coords);
+                        if (keysPressed.current.has("Shift")) { //resizing
+                            const dist = distance({x: selectedItem.x, y: selectedItem.y}, coords)
+                            const theta_total = Math.atan2((coords.y - selectedItem.y), (coords.x - selectedItem.x));
+                            const theta = theta_total - (selectedItem.angle * (Math.PI/180));
 
-                        if (selectedItem !== null) {
-                            setMadeChange(true);
-                            selectedItem.x = coords.x;
-                            selectedItem.y = coords.y;
+                            selectedItem.width = 2 * Math.abs(dist * Math.cos(theta))
+                            selectedItem.height = 2 * Math.abs(dist * Math.sin(theta))
                         }
                     }
+                }
+            } else {
+                const selectedItem: Block | AddOn | null = findSelectedItem(updatedBlocks, updatedAddOns, coords);
 
-                    return {
-                        blocks: updatedBlocks,
-                        addOns: updatedAddOns
-                    };
-                });
+                if (selectedItem !== null) {
+                    setMadeChange(true);
+                    selectedItem.x = coords.x;
+                    selectedItem.y = coords.y;
+                }
             }
-        }
+
+            return {
+                blocks: updatedBlocks,
+                addOns: updatedAddOns
+            };
+        });
     }
 
     useEffect(() => {
