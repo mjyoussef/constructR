@@ -44,16 +44,11 @@ export class SketchCache {
      * @returns a new copy of the original SketchCache with the added CacheEntry
      */
     addEntry(entry: CacheEntry): SketchCache {
-       const newCacheEntries: Array<CacheEntry> = new Array(this.cache.length+1);
+       const newCacheEntries: Array<CacheEntry> = new Array(this.idx+2);
        newCacheEntries[this.idx+1] = entry; //new entry is added after the current state
  
        for (let i=0; i<=this.idx; i++) {
           newCacheEntries[i] = this.cache[i];
-       }
-
-       // shift entries after `idx+1` 1 index to the right
-       for (let i=this.idx+1; i<this.cache.length; i++) {
-          newCacheEntries[i+1] = this.cache[i];
        }
  
        return new SketchCache(newCacheEntries, this.idx+1);

@@ -195,6 +195,8 @@ export function SketchCanvas(props: SketchProps) {
         setMouseDown(true);
     }
 
+
+
     /**
      * Updates mouseDown to be true and adds current entry to cache
      * @param e a mouse event
@@ -278,14 +280,41 @@ export function SketchCanvas(props: SketchProps) {
         });
     }
 
+    function handleKeyDown(e: KeyboardEvent) {
+        keysPressed.current.add(e.key);
+        if (keysPressed.current.has("Backspace") && (currentBlock >= 0 || currentAddOn >= 0)) {
+            setEntry(prevEntry => {
+                const updatedBlocks: Array<Block> = prevEntry.blocks.map(block => {
+                    return {...block};
+                });
+
+                const updatedAddOns: Array<AddOn> = prevEntry.addOns.map(addOn => {
+                    return {...addOn}
+                });
+
+                if (currentBlock >= 0) {
+                    updatedBlocks.splice(currentBlock, 1);
+                } 
+                if (currentAddOn >= 0) {
+                    updatedAddOns.splice(currentAddOn, 1);
+                }
+
+                return {blocks: updatedBlocks, addOns: updatedAddOns} as CacheEntry;
+            });
+        }
+    }
+
+    function handleKeyUp(e: KeyboardEvent) {
+        if (e.key === "Backspace" && (currentAddOn >= 0 || currentBlock >= 0)) {
+            props.setCache(prevCache => {
+                return prevCache.addEntry(entry);
+            });
+        }
+
+        keysPressed.current.delete(e.key);
+    }
+
     useEffect(() => {
-        function handleKeyDown(e: KeyboardEvent) {
-            keysPressed.current.add(e.key);
-        }
-    
-        function handleKeyUp(e: KeyboardEvent) {
-            keysPressed.current.delete(e.key);
-        }
 
         window.addEventListener("keydown", handleKeyDown);
         window.addEventListener("keyup", handleKeyUp);
@@ -294,7 +323,7 @@ export function SketchCanvas(props: SketchProps) {
             window.removeEventListener("keydown", handleKeyDown);
             window.removeEventListener("keyup", handleKeyUp);
         }
-    }, []);
+    }, [entry, currentBlock, currentAddOn]);
 
     // updates the current set of blocks / addOns if they are 
     // added from the library
