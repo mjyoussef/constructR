@@ -20,7 +20,8 @@ function App() {
         <Library
           setCache={setCache}
           setPopupTrigger={setPopupTrigger}
-          addOnInfo={addOnInfo}/>
+          addOnInfo={addOnInfo}
+          setAddOnInfo={setAddOnInfo}/>
       </div>
       <div className="h-11/12 col-span-4 border-solid border-2 border-black m-2">
         <Page

@@ -7,7 +7,8 @@ import {LibraryAddOn} from './LibraryAddOn';
 type LibraryProps = {
     setCache: Dispatch<SetStateAction<SketchCache>>,
     setPopupTrigger: Dispatch<SetStateAction<boolean>>,
-    addOnInfo: Array<AddOnInfo>
+    addOnInfo: Array<AddOnInfo>,
+    setAddOnInfo: Dispatch<SetStateAction<Array<AddOnInfo>>>
 }
 
 //arbitrarily chose initial dimensions for beams
@@ -70,14 +71,15 @@ export function Library(props: LibraryProps) {
             <Beam width={defaultWidth} height={defaultHeight} color={defaultColor}/>
             {props.addOnInfo.map(addOn => {
                 return <LibraryAddOn 
-                        key={counter++}
+                        key={addOn.label}
                         info={addOn}
                         setCache={props.setCache}
                         restriction={defaultImgRestriction}
                         x={nextAddOnX}
                         y={nextAddOnY}
                         setNextX={setNextAddOnX}
-                        setNextY={setNextAddOnY}/>
+                        setNextY={setNextAddOnY}
+                        setAddOnInfo={props.setAddOnInfo}/>
             })}
         </div>
     );

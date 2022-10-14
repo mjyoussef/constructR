@@ -195,8 +195,6 @@ export function SketchCanvas(props: SketchProps) {
         setMouseDown(true);
     }
 
-
-
     /**
      * Updates mouseDown to be true and adds current entry to cache
      * @param e a mouse event

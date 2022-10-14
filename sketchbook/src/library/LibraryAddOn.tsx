@@ -1,16 +1,18 @@
-import React, {useEffect, useRef, Dispatch, SetStateAction} from 'react';
+import {useEffect, useRef, Dispatch, SetStateAction} from 'react';
 import {SketchCache} from '../types/cache';
 import {AddOn, AddOnInfo} from '../types/uiObjects';
 import {displayAddOn} from '../utilities/drawer';
 
 type LibraryAddOnProps = {
+    key: string,
     info: AddOnInfo,
     setCache: Dispatch<SetStateAction<SketchCache>>,
     restriction: number,
     x: number,
     y: number,
     setNextX: Dispatch<SetStateAction<number>>,
-    setNextY: Dispatch<SetStateAction<number>>
+    setNextY: Dispatch<SetStateAction<number>>,
+    setAddOnInfo: Dispatch<SetStateAction<Array<AddOnInfo>>>
 }
 
 function resizeFactorOf(image: HTMLImageElement, width: number, height: number): number {
@@ -74,6 +76,12 @@ export function LibraryAddOn(props: LibraryAddOnProps) {
         });
     }
 
+    function deleteAddOn() {
+        props.setAddOnInfo(prevLst => {
+            return prevLst.filter(item => item.label !== props.info.label);
+        });
+    }
+
     return (
         <>
             <div className={"self-center"}>
@@ -85,6 +93,14 @@ export function LibraryAddOn(props: LibraryAddOnProps) {
                 </button>
             </div>
             <canvas className={"m-5"} ref={canvasRef} width={window.innerWidth} height={window.innerHeight}/>
+            <div className={"self-center"}>
+                <button
+                    className={"self-center bg-red-400 hover:bg-red-600 text-white font-bold rounded-full w-fit py-1 px-4 mb-5"}
+                    type={"button"}
+                    onClick={deleteAddOn}>
+                    Delete
+                </button>
+            </div>
         </>
     )
 }
