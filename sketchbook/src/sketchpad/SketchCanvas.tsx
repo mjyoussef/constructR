@@ -58,7 +58,7 @@ function findClosestItem(items: Array<Block> | Array<AddOn>, point: {x: number, 
  * @param point a 2D coordinate
  * @returns the closest block or add-on or null if no item is being pointed to
  */
-function findSelectedItem(blocks: Array<Block>, addOns: Array<AddOn>, point: {x: number, y:number}): Block | AddOn | null {
+ function findSelectedItem(blocks: Array<Block>, addOns: Array<AddOn>, point: {x: number, y:number}): Block | AddOn | null {
     const blockIdx = findClosestItem(blocks, point);
     const addOnIdx = findClosestItem(addOns, point);
 
@@ -150,7 +150,7 @@ export function SketchCanvas(props: SketchProps) {
      * @param e a mouse event (stores the coordinates of a click)
      * @returns NA
      */
-    function handleClick(e: React.MouseEvent<HTMLCanvasElement>): void {
+    function updateSelectedItem(e: React.MouseEvent<HTMLCanvasElement>): void {
 
         const coords: {x: number, y: number} | null = getClickCoordinates(e.clientX, e.clientY, canvasRef);
 
@@ -234,42 +234,38 @@ export function SketchCanvas(props: SketchProps) {
                 return {...addOn};
             });
 
-            if (keysPressed.current.size > 0 && (currentBlock >= 0 || currentAddOn >= 0)) {
-                let selectedItem: Block | AddOn | null = null;
+            let selectedItem: Block | AddOn | null = null;
 
+            // note that both will never be positive at the same time 
+            // (ie. a user cannot select both items)
+            if (currentBlock === -1 && currentAddOn >= 0) {
+                selectedItem = updatedAddOns[currentAddOn];
+            } 
+            if (currentBlock >= 0 && currentAddOn === -1) {
+                selectedItem = updatedBlocks[currentBlock];
+            }
 
-                // note that both will never be positive at the same time 
-                // (ie. a user cannot select both items)
-                if (currentBlock === -1 && currentAddOn >= 0) {
-                    selectedItem = updatedAddOns[currentAddOn];
+            if (selectedItem !== null && keysPressed.current.size > 0) {
+                if (keysPressed.current.has("r")) {
+                    const angle = Math.atan2((coords.y - selectedItem.y), (coords.x - selectedItem.x));
+                    selectedItem.angle = angle * (180/Math.PI);
                 }
-                if (currentBlock >= 0 && currentAddOn === -1) {
-                    selectedItem = updatedBlocks[currentBlock];
-                }
+                if (keysPressed.current.has("Shift")) {
+                    const dist = distance({x: selectedItem.x, y: selectedItem.y}, coords)
+                    const theta_total = Math.atan2((coords.y - selectedItem.y), (coords.x - selectedItem.x));
+                    const theta = theta_total - (selectedItem.angle * (Math.PI/180));
 
-                if (selectedItem !== null) {
-                    if (keysPressed.current.has("r")) { //rotations
-                        const angle = Math.atan2((coords.y - selectedItem.y), (coords.x - selectedItem.x));
-                        selectedItem.angle = angle * (180/Math.PI);
-                    } else {
-                        if (keysPressed.current.has("Shift")) { //resizing
-                            const dist = distance({x: selectedItem.x, y: selectedItem.y}, coords)
-                            const theta_total = Math.atan2((coords.y - selectedItem.y), (coords.x - selectedItem.x));
-                            const theta = theta_total - (selectedItem.angle * (Math.PI/180));
-
-
-                            // note: must multiply by 2 since width is measured end-to-end 
-                            // not from center to end
-                            selectedItem.width = 2 * Math.abs(dist * Math.cos(theta));
-                            selectedItem.height = 2 * Math.abs(dist * Math.sin(theta));
-                        }
-                    }
+                    // note: must multiply by 2 since width is measured end-to-end 
+                    // not from center to end
+                    selectedItem.width = 2 * Math.abs(dist * Math.cos(theta));
+                    selectedItem.height = 2 * Math.abs(dist * Math.sin(theta));
                 }
             } else {
-                const selectedItem: Block | AddOn | null = findSelectedItem(updatedBlocks, updatedAddOns, coords);
-
+                selectedItem = findSelectedItem(updatedBlocks, updatedAddOns, coords);
+                
                 if (selectedItem !== null) {
                     setMadeChange(true);
+
                     selectedItem.x = coords.x;
                     selectedItem.y = coords.y;
                 }
@@ -341,7 +337,7 @@ export function SketchCanvas(props: SketchProps) {
             onMouseDown={handleMouseDown}
             onMouseUp={handleMouseUp}
             onMouseMove={handleMouseMove}
-            onClick={handleClick}
+            onClick={updateSelectedItem}
         />
     );
 }
